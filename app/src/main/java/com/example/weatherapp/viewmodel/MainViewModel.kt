@@ -17,20 +17,11 @@ class MainViewModel(
     fun getWeather() = getDataFromLocalSource()
 
     fun getDataFromLocalSource() {
-        val i: Int = 3
-        val random = Random(3).nextInt()
-        when (random) {
-            1 -> {liveDataObserver.postValue(AppState.Loading)
-            }
-            2 -> {
-                liveDataObserver.postValue(AppState.Success(repository.getWeatherFromLocal()))
-            }
-            3 -> {
-                // error
-            }
-        }
+
         Thread {
+            liveDataObserver.postValue(AppState.Loading)
             sleep(1000)
+            liveDataObserver.postValue(AppState.Success(repository.getWeatherFromLocal()))
         }.start()
     }
 }
