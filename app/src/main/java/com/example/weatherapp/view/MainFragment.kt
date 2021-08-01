@@ -8,14 +8,20 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.weatherapp.R
+import com.example.weatherapp.databinding.MainFragmentBinding
 import com.example.weatherapp.viewmodel.MainViewModel
-
 class MainFragment : Fragment() {
 
-    lateinit var viewModel : MainViewModel
-    companion object{
-        fun newInstance() : Fragment{
+    lateinit var viewModel: MainViewModel
+    //var _binding: MainFragmentBinding? = null
+    lateinit var binding:MainFragmentBinding
+    /*val binding
+        get() : MainFragmentBinding {
+            return _binding!!
+        }*/
+
+    companion object {
+        fun newInstance(): Fragment {
             return MainFragment()
         }
     }
@@ -25,13 +31,15 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+        binding = MainFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        val observer = Observer<Any>{Toast.makeText(context, "Работает", Toast.LENGTH_LONG).show()}
+        val observer =
+            Observer<Any> { Toast.makeText(context, "Работает", Toast.LENGTH_LONG).show() }
         viewModel.getLiveData().observe(viewLifecycleOwner, observer)
         viewModel.getDataFromLocalSource()
     }
