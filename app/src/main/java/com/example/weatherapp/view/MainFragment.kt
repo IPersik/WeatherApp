@@ -9,7 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.databinding.MainFragmentBinding
+import com.example.weatherapp.viewmodel.AppState
 import com.example.weatherapp.viewmodel.MainViewModel
+import com.google.android.material.snackbar.Snackbar
+
 class MainFragment : Fragment() {
 
     lateinit var viewModel: MainViewModel
@@ -38,9 +41,30 @@ class MainFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        val observer =
-            Observer<Any> { Toast.makeText(context, "Работает", Toast.LENGTH_LONG).show() }
-        viewModel.getLiveData().observe(viewLifecycleOwner, observer)
-        viewModel.getDataFromLocalSource()
+        //val observer = Observer<Any> { Toast.makeText(context, "Работает", Toast.LENGTH_LONG).show() }
+        viewModel.getLiveData().observe(viewLifecycleOwner, Observer { renderData(it) })
+        viewModel.getWeather()
+    }
+
+    private fun renderData(appState: AppState) {
+        when(appState){
+            is AppState.Error -> TODO()
+            is AppState.Success -> {
+                //val weatherData = appState.dataWeather
+                binding.loadingLayout.visibility = View.GONE
+                Snackbar.make(binding.mainView, "Success", Snackbar.LENGTH_LONG).show()
+                setData(appState)
+            }
+            AppState.Loading -> {
+                binding.loadingLayout.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun setData(appState: AppState.Success){
+        binding.cityCoordinates.text = "${appState.dataWeather.city.lat} ${appState.dataWeather.city.long}"
+        binding.cityName.text = appState.dataWeather.city.city
+        binding.feelsLikeValue.text = appState.dataWeather.temperature.toString()
+        binding.temperatureValue.text = appState.dataWeather.feelsLike.toString()
     }
 }
